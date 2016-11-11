@@ -12,3 +12,4 @@ css
 *.map
 *.temp
 *.bak
+*.lock
