@@ -1,22 +1,21 @@
 // Browserify handles scoping; so we don't need to IIFE this file.
 
-// Sample module
+// Easing library (whittle this down to just the functions we use)
 var easingLibrary = require("./modules/easingLibrary");
 
-
 // so basically in here we're going to need to do a handful of things:
-
+//
 // - animate the current element out
 // - pause a bit if we're between animations
 // - animate the next element in
 // - pause a while longer if we're between animations
 // - repeat (from beginning, if need be)
-
+//
 // to animate an element in or out I'm going to need it's total length and its text
 
 
 //
-// Easing/animation variables
+// Easing/animation variables; Should this all be a config object?
 //
 
 // this function...
@@ -33,22 +32,15 @@ var easingValue;
 
 // for this element...
 var animatedElement;
-var attrs;
+
+// from this collection...
+var currentIndex = 0;
+var textObjects = [];
 
 // in this direction...
 var animationDirection = "out";
 
-// with some required attributes...
-var contentElementAttributes = {};
-
-// and thesse metavalues.
-var direction;
-var finalValue;
-
-var currentIndex = 0;
-
-
-
+// Store the text and the lengths
 var TextObject = function(el) {
   this.el = el;
 
@@ -58,15 +50,9 @@ var TextObject = function(el) {
   return this;
 }
 
-
-
-var textObjects = [];
-var currentInex = 0;
-
 // document content loaded wrapper
 document.addEventListener('DOMContentLoaded', function() {
-  // Let's get this party started.
-  console.log("hello let us begin");
+  // should dump most of this into an init function for re-use (i.e. the setItUp function below)
 
   var terms = document.querySelectorAll("[data-term]");
   var activeTerm = _.find(terms, function(item) {
@@ -80,8 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
   console.dir(activeTerm);
   console.dir(textObjects);
 
-
-  // lets draw through one element out based on its length
+  // lets draw through the first element
 
   startValue = textObjects[0].length;
   changeInValue = startValue * -1;
@@ -94,10 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
   var goForIt = window.setTimeout(function() {
     draw();
   }, 2000);
-
 });
 
-
+/**
+ * Draw loop.
+ */
 function draw() {
   easingValue = easeFunction(iteration, startValue, changeInValue, totalIts);
 
@@ -125,15 +111,11 @@ function draw() {
 }
 
 function setUpNext() {
-
-  console.log("setUpNext");
   if (animationDirection == "out") {
     currentIndex = (currentIndex + 1 < textObjects.length) ? currentIndex + 1 : 0;
   }
 
   animatedElement = textObjects[currentIndex];
-
-
   animationDirection = (animationDirection == "out") ? "in" : "out";
 
   if (animationDirection == "in") {
@@ -151,5 +133,4 @@ function setUpNext() {
   } else {
     draw();
   }
-
 }
