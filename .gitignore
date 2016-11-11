@@ -1,0 +1,14 @@
+# Directories
+
+node_modules
+dist
+temp
+css
+
+# Files
+
+.DS_store
+*.html
+*.map
+*.temp
+*.bak
