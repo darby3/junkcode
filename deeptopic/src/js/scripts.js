@@ -3,26 +3,45 @@
 
 // Browserify handles scoping; so we don't need to IIFE this file.
 
-// Easing library (whittle this down to just the functions we use)
-var easingLibrary = require("./modules/easingLibrary");
+var accordionHandler = require("./modules/accordionHandler");
 
-// so basically in here we're going to need to do a handful of things:
-//
-// - animate the current element out
-// - pause a bit if we're between animations
-// - animate the next element in
-// - pause a while longer if we're between animations
-// - repeat (from beginning, if need be)
-//
-// to animate an element in or out I'm going to need it's total length and its text
+// Sample module
+var helloWorld = require("./modules/helloWorld");
 
+// document content loaded wrapper
+document.addEventListener('DOMContentLoaded', function () {
+  // Let's get this party started.
+  console.log("hello let us begin");
+
+  // Invoke a module.
+  helloWorld();
+
+  // Start ading code.
+
+  // Main event listeners
+
+  document.addEventListener("click", function (e) {
+    clickHandler(e);
+  });
+});
 
 //
-// Easing/animation variables; Should this all be a config object?
+// plumbing
 //
+
+function clickHandler(e) {
+  if (e.target.hasAttribute("data-deepTopic-trigger")) {
+    accordionHandler(e);
+  }
+}
+
+},{"./modules/accordionHandler":2,"./modules/helloWorld":4}],2:[function(require,module,exports){
+"use strict";
+
+var easingLibrary = require("./easingLibrary");
 
 // this function...
-var easeFunction = easingLibrary.easeOutQuint;
+var easeFunction;
 
 // will take these variables (in this order)...
 var iteration = 0;
@@ -35,110 +54,159 @@ var easingValue;
 
 // for this element...
 var animatedElement;
+var attrs;
 
-// from this collection...
-var currentIndex = 0;
-var textObjects = [];
+// with some required attributes...
+var contentElementAttributes = {};
 
-// in this direction...
-var animationDirection = "out";
-
-// Store the text and the lengths
-var TextObject = function TextObject(el) {
-  this.el = el;
-
-  this.text = el.innerHTML;
-  this.length = this.text.length;
-
-  return this;
-};
-
-// document content loaded wrapper
-document.addEventListener('DOMContentLoaded', function () {
-  // should dump most of this into an init function for re-use (i.e. the setItUp function below)
-
-  var terms = document.querySelectorAll("[data-term]");
-  var activeTerm = _.find(terms, function (item) {
-    return item.dataset.active = "true";
-  });
-
-  _.each(terms, function (el) {
-    textObjects.push(new TextObject(el));
-  });
-
-  console.dir(activeTerm);
-  console.dir(textObjects);
-
-  // lets draw through the first element
-
-  startValue = textObjects[0].length;
-  changeInValue = startValue * -1;
-
-  totalIts = textObjects[0].length * 15; // 15 frames per letter, but eased of course...
-
-  animatedElement = textObjects[0];
-  currentIndex = 0;
-
-  var goForIt = window.setTimeout(function () {
-    draw();
-  }, 2000);
-});
+// and thesse metavalues.
+var direction;
+var finalValue;
 
 /**
- * Draw loop.
+ * There's some things we need to know to animate the element correctly.
+ */
+function getContentElementAttributes(el) {
+
+  console.dir(el);
+  var aEC = el.querySelector("[data-deeptopic-content]");
+  var aECstyle = window.getComputedStyle(aEC);
+  var mTop = Number(aECstyle.marginTop.match(/(\d+)px/)[1]);
+  var mBot = Number(aECstyle.marginBottom.match(/(\d+)px/)[1]);
+
+  var totalHeight = aEC.offsetHeight + mTop + mBot;
+
+  return {
+    el: aEC,
+    totalHeight: totalHeight
+  };
+}
+
+function setAnimatedElement(target) {
+  animatedElement = target;
+  attrs = getContentElementAttributes(animatedElement);
+}
+
+function openIt(target, button) {
+  // Change button text
+  var txt = button.innerHTML;
+  button.innerHTML = txt.replace(/more/, "less");
+
+  // Reset our animation variables / attributes
+  setAnimatedElement(target);
+
+  var elTop = animatedElement.getBoundingClientRect().top;
+  // console.log("elTop -- " + elTop);
+
+  if (attrs.totalHeight + animatedElement.getBoundingClientRect().top < window.innerHeight) {
+    easeFunction = easingLibrary.easeInOutCubic;
+  } else {
+    easeFunction = easingLibrary.easeInCubic;
+  }
+
+  iteration = 0;
+  startValue = 0;
+  changeInValue = startValue + attrs.totalHeight;
+
+  direction = "down";
+  finalValue = "yes";
+
+  // Set our progress flag
+  animatedElement.setAttribute("data-deeptopic-expanded", "progress");
+
+  // Trigger the draw loop
+  draw();
+}
+
+function closeIt(target, button) {
+  // Change button text
+  var txt = button.innerHTML;
+  button.innerHTML = txt.replace(/less/, "more");
+
+  // Reset our animation variables / attributes
+  setAnimatedElement(target);
+
+  var elTop = animatedElement.getBoundingClientRect().top;
+  console.log("elTop -- " + elTop);
+
+  if (animatedElement.getBoundingClientRect().bottom < window.innerHeight) {
+    easeFunction = easingLibrary.easeInOutCubic;
+  } else {
+    easeFunction = easingLibrary.easeOutExpo;
+  }
+
+  iteration = 0;
+  startValue = attrs.totalHeight;
+  changeInValue = startValue * -1;
+
+  direction = "up";
+  finalValue = "no";
+
+  // Set our progress flag
+  animatedElement.setAttribute("data-deeptopic-expanded", "progress");
+
+  // Trigger the draw loop
+  draw();
+}
+
+/**
+ * Draw loop
  */
 function draw() {
   easingValue = easeFunction(iteration, startValue, changeInValue, totalIts);
+  animatedElement.style.height = easingValue + 'px';
 
-  animatedElement.el.innerHTML = animatedElement.text.substring(0, Math.round(easingValue));
-
-  if (animatedElement.el.innerHTML.length == 0) {
-    animatedElement.el.innerHTML = '&nbsp;';
-  }
-
-  console.log("Math.round(easingValue) -- " + Math.round(easingValue));
-
+  // continue the draw loop or exit out, depending
   if (iteration < totalIts) {
-
-    // there's a really really really long pause when we reach zero ... can we
-    // cut that out?
-
     iteration++;
     requestAnimationFrame(draw);
   } else {
-    if (animationDirection == "out") {
-      animatedElement.el.setAttribute("data-active", "false");
-    }
-    setUpNext();
+    animatedElement.setAttribute("data-deeptopic-expanded", finalValue);
   }
 }
 
-function setUpNext() {
-  if (animationDirection == "out") {
-    currentIndex = currentIndex + 1 < textObjects.length ? currentIndex + 1 : 0;
+// the main Accordion Handler function
+module.exports = function (e) {
+  e.preventDefault();
+
+  // console.dir(e.target);
+
+  var targetID = e.target.dataset.deeptopicTrigger;
+  // console.dir(e.targetID);
+  var target = document.querySelector('[data-deeptopic-target="' + targetID + '"]');
+
+  // console.dir(target);
+
+  switch (target.dataset.deeptopicExpanded) {
+    case "progress":
+      break;
+
+    case "yes":
+      closeIt(target, e.target);
+      break;
+
+    case "no":
+      openIt(target, e.target);
+      break;
+
+    default:
+      break;
   }
+};
 
-  animatedElement = textObjects[currentIndex];
-  animationDirection = animationDirection == "out" ? "in" : "out";
+// So basically we're going to need to:
+// - reset / set our animation variables
+//   - total iterations might be dynamic based on how tall the item is... i.e.
+//     if it's longer than the screen or shorter than the screen we might want
+//     it to time a little differently...but we can tackle that later
+// - set the progress flag
+// - trigger the draw loop
+// - clean up when we're done
+//
+// for now we're going to just jump right in to the animation for testing
+// purposes
 
-  if (animationDirection == "in") {
-    animatedElement.el.setAttribute("data-active", "true");
-  }
-
-  startValue = animationDirection == "in" ? 0 : animatedElement.length;
-  changeInValue = animationDirection == "in" ? animatedElement.length : startValue * -1;
-
-  iteration = 0;
-  totalIts = animatedElement.length * 15; // 15 frames per letter, but eased of course...
-
-  if (animationDirection == "out") {
-    window.setTimeout(draw, 2000);
-  } else {
-    draw();
-  }
-}
-
-},{"./modules/easingLibrary":2}],2:[function(require,module,exports){
+},{"./easingLibrary":3}],3:[function(require,module,exports){
 "use strict";
 
 // Easing functions
@@ -296,6 +364,17 @@ var easingLibrary = {
 };
 
 module.exports = easingLibrary;
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+// Say hello! A tiny module!
+
+var helloWorld = function helloWorld() {
+  console.log("Hello, from a module!");
+};
+
+module.exports = helloWorld;
 
 },{}]},{},[1])
 

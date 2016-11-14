@@ -1,11 +1,3 @@
 # README.md
 
-Junk code quick start folder. Copy this, ```npm install```, go to town.
-
-## Notes
-
-There's an issue with grunt-contrib-concat not picking up sourcemaps. Change line 149 of ```./node_modules/grunt-contrib-concat/tasks/lib/sourcemap.js``` like so to fix it:
-
-```
-      if (/data:application\/json;(charset[:=]utf-8;)?base64,([^\s]+)/.test(sourceMapFile)) {
-```
+Swapping out a word using a "typing" effect. Uses requestAnimationFrame. No jQuery, does use underscore for some loops, but that could be removed if not in widespread use.
