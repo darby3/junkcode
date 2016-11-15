@@ -1,0 +1,54 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+// Styles
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  width: 100%;
+  min-height: 100%;
+  font-family: $titillium-family;
+}
+
+// hmm
+.bigbox {
+  min-height: 5000px;
+  width: calc(100% - 4em);
+  border: 1px dotted #009900;
+  margin: 2em;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,2989d8+29,7db9e8+64,207cca+100 */
+  background: #1e5799; /* Old browsers */
+  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 29%, #7db9e8 64%, #207cca 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+
+.fixed {
+  position: fixed;
+
+  width: 10vw;
+  height: 10vh;
+
+  bottom: 5px;
+  left: calc(50% - 5vw);
+
+          display: flex;
+        flex-flow: row nowrap;
+  justify-content: center;
+      align-items: center;
+
+      background: rgba(#1e5799, .5);
+
+      border: 1px solid #ffffff;
+}
