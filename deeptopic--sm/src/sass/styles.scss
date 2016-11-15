@@ -1,0 +1,151 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+$outer-margin: 2em;
+$outer-margin-more: 4em;
+
+$breakpoint-small: 0px;
+$breakpoint-medium: 420px;
+$breakpoint-large: 760px;
+$breakpoint-extralarge: 920px;
+$breakpoint-mega: 1200px;
+
+$inner-gutter: 2em;
+$inner-gutter-more: 4em;
+
+$darkgray: #323232;
+$blue: #0077ff;
+
+/*! Styles */
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  width: 100%;
+  min-height: 100%;
+  font-family: $titillium-family;
+  font-size: 1.3rem;
+  line-height: 1.6;
+}
+
+/*!
+ * Regions: Wrappers
+ */
+
+// Wrapper classes are cool. You can tuck these as deep into the HTML as needed
+// to handle setting horizontal widths. Everything above that level can assume a
+// width of 100%, which can be useful for various effects. Everything from
+// wrapper down can assume safe widths and properly aligned margins.
+
+.wrapper {
+  margin-right: auto;
+  margin-left: auto;
+  width: calc(100% - #{$outer-margin} - #{$outer-margin});
+
+  max-width: $breakpoint-large;
+}
+
+.wrapper--narrow {
+  @extend .wrapper;
+
+  max-width: $breakpoint-medium;
+}
+
+.wrapper--wide {
+  @extend .wrapper;
+
+  max-width: $breakpoint-mega;
+}
+
+.wrapper--center {
+  @extend .wrapper;
+
+  text-align: center;
+}
+
+
+/*!
+ * Component: Zebra Section
+ */
+
+// Well, it's not really a component, but...
+
+.zebra {
+  background: #ffffff;
+  padding: 2em 0 4em 0;
+
+  &:nth-child(2n) {
+    background: #efefef;
+  }
+}
+
+// So down here I basically want to break apart the "functionality" styling and
+// the "formatting" styling...
+
+.deeptopic {
+  overflow: hidden;
+}
+
+.js {
+  .deeptopic[data-deeptopic-expanded="no"] {
+    height: 0vh;
+  }
+}
+
+.deeptopic__button {
+  text-decoration: none;
+  font-weight: 400;
+  font-family: $titillium-family;
+  color: #ffffff;
+  transition: color 0.15s ease-out;
+  line-height: 1.6;
+  display: block;
+  margin: 4rem auto;
+  padding: 0.4rem 1.5rem 0.6rem;
+
+  // border-radius: 6px;
+  // border: 1px solid $blue;
+  border: 0;
+  font-size: 1.2rem;
+  background: #000000;
+
+  @media screen and (min-width: $breakpoint-medium) {
+    font-size: 1.3rem;
+  }
+
+  @media screen and (min-width: $breakpoint-large) {
+    font-size: 1.4rem;
+  }
+
+  &:visited {
+    color: $darkgray;
+  }
+
+  &:hover {
+    cursor: pointer;
+    color: lighten($darkgray, 20%);
+  }
+
+  &:active {
+    color: $blue;
+
+    // border: 1px solid darken($blue, 10%);
+
+  }
+}
+
+
+
+
+
+.someOtherFormat {
+  text-align: center;
+  padding-bottom: 1px;
+  padding-top: 1px;
+}
