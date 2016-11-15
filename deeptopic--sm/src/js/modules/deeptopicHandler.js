@@ -7,17 +7,16 @@ var easeFunction;
 var iteration = 0;
 var startValue;
 var changeInValue;
-var totalIts = 55; // ~ 60/fps
+var totalIts = 35; // ~ 60/fps
 
 // and generate this value...
 var easingValue;
 
 // for this element...
 var animatedElement;
-var attrs;
 
 // with some required attributes...
-var contentElementAttributes = {};
+var contentElementHeight;
 
 // and thesse metavalues.
 var direction;
@@ -52,65 +51,83 @@ function deeptopicHandler(e) {
   }
 };
 
-
+/**
+ * Reset vars.
+ */
 function resetVars(target) {
   animatedElement = target;
-  attrs = getContentElementAttributes(animatedElement);
+  setContentElementHeight(animatedElement);
+
   iteration = 0;
+  animatedElement.setAttribute("data-deeptopic-expanded", "progress");
 
   return;
 }
 
-
+/**
+ * Prep to open the content element.
+ */
 function openIt(target, button) {
   changeButton(button, "less");
 
-  if (attrs.totalHeight + animatedElement.getBoundingClientRect().top < window.innerHeight) {
-    easeFunction = easingLibrary.easeInOutCubic;
-  } else {
-    easeFunction = easingLibrary.easeInCubic;
-  }
+  easeFunction = windowWillContainContent() ? easingLibrary.easeInOutCubic : easingLibrary.easeInCubic;
 
   startValue = 0;
-  changeInValue = startValue + attrs.totalHeight;
+  changeInValue = startValue + contentElementHeight;
 
   direction = "down";
   finalValue = "yes";
 
-  // Set our progress flag
-  animatedElement.setAttribute("data-deeptopic-expanded", "progress");
-
-  // Trigger the draw loop
   draw();
 }
 
+/**
+ * Prep to close the content element.
+ */
 function closeIt(target, button) {
   changeButton(button, "more");
 
-  if (animatedElement.getBoundingClientRect().bottom < window.innerHeight) {
-    easeFunction = easingLibrary.easeInOutCubic;
-  } else {
-    easeFunction = easingLibrary.easeOutExpo;
-  }
+  easeFunction = windowContainsContent() ? easingLibrary.easeInOutCubic : easingLibrary.easeOutExpo;
 
-  startValue = attrs.totalHeight;
+  startValue = contentElementHeight;
   changeInValue = startValue * -1;
 
   direction = "up";
   finalValue = "no";
 
-  // Set our progress flag
-  animatedElement.setAttribute("data-deeptopic-expanded", "progress");
-
   // Trigger the draw loop
   draw();
 }
 
-
-
 /**
- * Change the button text.
+ * Main draw loop
  */
+function draw() {
+  easingValue = easeFunction(iteration, startValue, changeInValue, totalIts);
+  animatedElement.style.height = easingValue + 'px';
+
+  // continue the draw loop or exit out, depending
+  if (iteration < totalIts) {
+    iteration++;
+    requestAnimationFrame(draw);
+  } else {
+    animatedElement.setAttribute("data-deeptopic-expanded", finalValue);
+  }
+}
+
+
+//
+// Plumbing functions
+//
+
+function windowWillContainContent() {
+  return (contentElementHeight + animatedElement.getBoundingClientRect().top) < window.innerHeight;
+}
+
+function windowContainsContent() {
+  return animatedElement.getBoundingClientRect().bottom < window.innerHeight;
+}
+
 function changeButton(button, term) {
   var txt = button.innerHTML;
 
@@ -128,9 +145,6 @@ function changeButton(button, term) {
   }
 }
 
-/**
- * Get the target of a trigger.
- */
 function getTarget(trigger) {
   var id = trigger.dataset.deeptopicTrigger;
 
@@ -141,21 +155,15 @@ function getTarget(trigger) {
   return document.querySelector(targetString);
 }
 
-
 /**
  * There's some things we need to know to animate the element correctly.
  */
-function getContentElementAttributes(el) {
+function setContentElementHeight(el) {
   var contentElement = el.querySelector("[data-deeptopic-content]");
   var contentElementStyle = window.getComputedStyle(contentElement);
 
-  console.log(contentElementStyle);
-
   var pTop = getPxValue(contentElementStyle.paddingTop);
   var pBottom = getPxValue(contentElementStyle.paddingBottom);
-
-  console.log("pTop -- " + pTop);
-  console.log("pBottom -- " + pBottom);
 
   if (pTop === 0) {
     contentElement.style.paddingTop = '1px';
@@ -178,10 +186,9 @@ function getContentElementAttributes(el) {
     contentElement.style.paddingBottom = '';
   }
 
-  return {
-    el: contentElement,
-    totalHeight: totalHeight
-  };
+  contentElementHeight = totalHeight;
+
+  return;
 }
 
 
@@ -189,25 +196,13 @@ function getPxValue(value) {
   return Number(value.match(/(\d+)px/)[1]);
 }
 
-
-/**
- * Draw loop
- */
-function draw() {
-  easingValue = easeFunction(iteration, startValue, changeInValue, totalIts);
-  animatedElement.style.height = easingValue + 'px';
-
-  // continue the draw loop or exit out, depending
-  if (iteration < totalIts) {
-    iteration++;
-    requestAnimationFrame(draw);
-  } else {
-    animatedElement.setAttribute("data-deeptopic-expanded", finalValue);
-  }
-}
-
-// the main Accordion Handler function
+// the main handler function
 module.exports = deeptopicHandler;
+
+
+
+
+
 
 // So basically we're going to need to:
 // - reset / set our animation variables
