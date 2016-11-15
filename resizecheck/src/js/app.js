@@ -40,25 +40,36 @@ function resizeHandler(e) {
 
   // console.log("scroll handler");
   if (ticking) {
-    console.log("in the ticking check");
+    // console.log("in the ticking check");
   }
 
   if (!ticking) {
     window.requestAnimationFrame(function(DOMHighResTimeStamp) {
 
-      console.log("requestAnimationFrame called");
+      // console.log("requestAnimationFrame called");
 
       var box = document.getElementById("stats");
 
       var sizestats = '';
       sizestats += window.innerWidth + 'px';
-      sizestats += ', ';
+      sizestats += ', <br />';
       sizestats += window.innerHeight + 'px';
 
       box.innerHTML = sizestats;
 
+      var boxheight = getPxValue(window.getComputedStyle(box).height);
 
-      box.style.top = window.innerHeight / 2 + "px";
+      console.log("window.getComputedStyle(box).height -- " + window.getComputedStyle(box).height);
+
+      console.log("boxheight -- " + boxheight);
+
+      var boxPos = window.innerHeight / 2 - boxheight / 2;
+
+      console.log("boxPos -- " + boxPos);
+      box.style.top = boxPos + "px";
+
+      box.style.width = "10vw";
+      box.style.height = "10vw";
 
 
 
@@ -70,4 +81,9 @@ function resizeHandler(e) {
   }
 
   ticking = true;
+}
+
+
+function getPxValue(value) {
+  return Number(value.match(/([\d.]+)px/)[1]);
 }

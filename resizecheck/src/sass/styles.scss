@@ -13,16 +13,20 @@ html {
 body {
   padding: 0px;
   width: 100%;
-  min-height: 100%;
+  // min-height: 100%;
   font-family: $titillium-family;
+}
+
+h1 {
+  margin: 0;
 }
 
 // hmm
 .bigbox {
-  min-height: 5000px;
-  width: calc(100% - 4em);
-  border: 1px dotted #009900;
-  margin: 2em;
+  height: calc(100vh - 2px - 4em);
+  width: calc(100vw - 4em - 2px);
+  border: 1px solid #000000;
+  margin: 2em 2em 0 2em;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
@@ -30,7 +34,7 @@ body {
 
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,2989d8+29,7db9e8+64,207cca+100 */
   background: #1e5799; /* Old browsers */
-  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 29%, #7db9e8 64%, #207cca 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: linear-gradient(to bottom, #1e5799 0%, #2989d8 29%, #7db9e8 75%, #207cca 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 }
 
 
@@ -44,9 +48,11 @@ body {
   left: calc(50% - 5vw);
 
           display: flex;
-        flex-flow: row nowrap;
+        flex-flow: column nowrap;
   justify-content: center;
       align-items: center;
+
+      text-align: center;
 
       background: rgba(#1e5799, .5);
 
