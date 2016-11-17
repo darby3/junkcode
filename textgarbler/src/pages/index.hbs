@@ -1,0 +1,44 @@
+---
+title: Text garbler tester
+---
+
+{{!-- <form action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/echo.cgi" method="post">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_name">
+    </div>
+
+    <div>
+        <label for="mail">E-mail:</label>
+        <input type="email" id="mail" name="user_email">
+    </div>
+
+    <div>
+        <label for="msg">Message:</label>
+        <textarea id="msg" name="user_message"></textarea>
+    </div>
+
+    <div class="button">
+        <button type="submit">Send your message</button>
+    </div>
+</form> --}}
+
+<div class="wrapper">
+    <h1>Let's garble some text!</h1>
+
+    <form action="./" method="post">
+        <div>
+            <label for="textToGarble">Text:</label>
+            <textarea id="textToGarble" name="user_text"></textarea>
+        </div>
+
+        <div class="button">
+            <button id="garbler" type="submit">Garble it</button>
+        </div>
+    </form>
+</div>
+
+<div class="wrapper">
+    <h2>Here's some output</h2>
+    <div id="output" class="outputtext"></div>
+</div>
