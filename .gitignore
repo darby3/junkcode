@@ -12,3 +12,7 @@ css
 *.temp
 *.bak
 *.lock
+
+# Data
+
+datadir
