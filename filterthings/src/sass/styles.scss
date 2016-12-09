@@ -1,0 +1,144 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+// Styles
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  width: 100%;
+  min-height: 100%;
+  font-family: $titillium-family;
+}
+
+
+
+
+// Navigation breakpoints
+
+$menu-small: 0px;
+$menu-medium: 420px;
+$menu-large: 760px;
+$menu-extralarge: 920px;
+$menu-mega: 1200px;
+
+// outer margins
+$min-outer-margin: 2em;
+$min-outer-margin-more: 4em;
+
+// inner gutters
+$min-inner-gutter: 2em;
+$min-inner-gutter-more: 4em;
+
+
+
+
+/*=========================================
+=            Regions: Wrappers            =
+=========================================*/
+
+//
+// Main article wrapper region
+//
+
+// Wrapper classes are cool. You can tuck them as deep into the HTML as needed
+// to handle setting horizontal widths. Everything above that level can assume a
+// width of 100%, which can be useful for various effects. Everything from
+// wrapper down can assume safe widths and properly aligned margins.
+
+.wrapper {
+  margin-right: auto;
+  margin-left: auto;
+
+  width: calc(100% - #{$min-outer-margin} - #{$min-outer-margin});
+  max-width: $menu-large;
+
+  border: 1px solid #323232;
+}
+
+//
+// A wrapper to basically center the text no matter what (because we're not
+// going to be pulling anything out of it)
+//
+
+.wrapper--center {
+  @extend .wrapper;
+}
+
+//
+// Originally the textAndImage and headline wrappers; making it generic so it
+// handles general "wide" content (content that may stretch wider across a
+// larger screen)
+//
+
+.wrapper--wide {
+  @extend .wrapper;
+
+  max-width: calc(#{$menu-mega} + #{$min-inner-gutter});
+}
+
+// patching this in until I decide if it warrants any special treatment (other
+// than the media query below)
+
+.wrapper--textAndImage {
+  @extend .wrapper--wide;
+}
+
+
+@media screen and (min-width: $menu-extralarge) {
+  .wrapper--textAndImage {
+    // max-width: none;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+
+.wrapper--sectionTOC {
+  @extend .wrapper;
+  padding: 0 2em;
+  width: calc(100% - #{$min-outer-margin} - #{$min-outer-margin} - 4em);
+  max-width: $menu-large;
+}
+
+@media screen and (min-width: $menu-extralarge) {
+  .wrapper--sectionTOC {
+    // max-width: calc(100% - #{$min-outer-margin} - #{$min-progress-bar-width} - #{$min-outer-margin} - 4em);
+  }
+}
+
+
+.items,
+.filters {
+          display: flex;
+        flex-flow: row wrap;
+  justify-content: flex-start;
+      align-items: stretch;
+}
+
+.item,
+.filter {
+  border: 1px dotted #efefef;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+.filter {
+  flex-grow: 1;
+}
+
+.filter--button {
+  margin: 1rem;
+}
+
+.item.gone {
+  display: none;
+}
