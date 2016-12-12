@@ -15,24 +15,23 @@ document.addEventListener('DOMContentLoaded', function() {
   var filters = document.getElementById("filters");
 
   filters.addEventListener("click", function(e) {
+    var totalGroup = document.querySelectorAll("[data-group]");
+
     if (e.target.hasAttribute("data-target")) {
       console.log("button");
       console.dir(e.target);
       
-      var totalGroup = document.querySelectorAll("[data-group]");
       var groupToVanish = e.target.getAttribute("data-target");
 
       console.log("groupToVanish -- " + groupToVanish);
 
       _.each(totalGroup, function (element, index, list) {
-
-        // console.dir(element.dataset);
-
-        if (element.dataset.group === groupToVanish) {
-          element.classList.add("gone");
-        }
+        element.dataset.filtered = (element.dataset.group === groupToVanish) ? "active" : "faded";
       })
-
+    } else if (e.target.hasAttribute("data-reset")) {
+      _.each(totalGroup, function (element, index, list) {
+        element.dataset.filtered = "";
+      })      
     }
   })
 
