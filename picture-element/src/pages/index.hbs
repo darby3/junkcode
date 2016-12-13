@@ -1,0 +1,41 @@
+---
+title: Picture Element
+---
+<h1>Picture element test</h1>
+
+<section class="wrapper--wideImage">
+    
+    <picture>
+        <source
+            media="(min-width: 1430px )"
+            srcset="img/demo-gradients/wide@2x.jpg     2732w,
+                    img/demo-gradients/wide.jpg        1366w"
+            sizes="1366px"
+                                                            />
+        <source
+            media="(min-width: 1088px )"
+            srcset="img/demo-gradients/medium@2x.jpg   2048w,
+                    img/demo-gradients/medium.jpg      1024w"
+            sizes="1024px"
+                                                            />
+        <source
+            media="(min-width: 864px )"
+            srcset="img/demo-gradients/narrow@2x.jpg   1600w,
+                    img/demo-gradients/narrow.jpg      800w"
+            sizes="800px"
+                                                            />
+        <source
+            media="(max-width: 863px )"
+            srcset="img/demo-gradients/square@2x.jpg   800w,
+                    img/demo-gradients/square.jpg      400w"
+            sizes="(min-width: 401px) 400px,
+                    100vw"       
+                                                            />
+        <img 
+            class="wideImage" 
+            src="img/demo-gradients/square.jpg" 
+            alt="Fill in some cool alt text down here..." 
+                                                            />
+    </picture>
+    
+</section>
