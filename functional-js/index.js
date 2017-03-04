@@ -1,4 +1,15 @@
-// Working through Functional JavaScript in a Node environment.
+/**
+ *
+ * Working through Functional JavaScript book. Using node to run the code.
+ *
+ * I digress and explore along the way and then try to comment the code up to
+ * help explain my thinking and exploration. And then I comment code out as I
+ * go. So this probably looks like a huge mess.
+ *
+ * I also expect I'll start moving re-used functions into a separate module
+ * file. That'll make it even messier, sort of.
+ *
+ */
 
 // Requires.
 var _ = require('underscore');
@@ -111,38 +122,73 @@ var listAllElements = unsplat(function(array) {
   })
 })
 
-listAllElements('one', 'two', 'three');
+// listAllElements('one', 'two', 'three');
 
-var makeArrayAndAppend = unsplat(function(array) {
-  var insideArray = array;
-  insideArray.push("sandwich");
-  return insideArray;
+// sep();
+
+// note: can't one line this as array.push returns the resulting length
+var makeArrayAndAppendSandwich = unsplat(function(array) {
+  array.push("sandwich");
+  return array;
 })
 
-var newArray = makeArrayAndAppend('a','b','c');
+var newArray = makeArrayAndAppendSandwich('a','b','c');
 
-newArray.forEach(function(item, index) {
-  console.log(item, '---', index)
-})
+// See notes below.
 
-// POSSIBLE GOTCHA?
+// This works as expected; we know newArray is still an array.
+// newArray.forEach(function(item, index) {
+//   console.log(item, '---', index)
+// })
 
-// Note you can't feed the newArray back to listAllElements because that
-// function will take the array as a single argument (where it is really
-// expecting a number of separate items), and will pass the whole thing into the
-// function (A) as one argument. So it's sort of converting the array into one
-// element of an array. Maybe? I might be missing a beat here.
+// sep()
+
+// This does not; when we use the .call method on the newArray argument it
+// treats it as a single argument — the call passes the entire array in as a
+// single argument to the listing function.
+
+// listAllElements(newArray);
+
+// The answer here probably involves checking, inside the listAll function, if
+// the next argument in the list is an array, and it is, breaking it out into
+// separate elements. I mean, if you're expecting to mix arrays and not arrays
+// as argumemts, but want them to be treated as one long list instead?
+
+/*========================================
+=            Possible gotcha?            =
+========================================*/
+
+/**
+ * This gets digressy:
+ * 
+ * (I got into trouble with an earlier version of "makeArrayAndAppendSandwich"
+ * function above.)
+ * 
+ * Note you can't feed the newArray back to listAllElements because that
+ * function will take the array as a single argument (where it is really
+ * expecting a number of separate items), and will pass the whole thing into the
+ * function (A) as one argument. So it's sort of converting the array into one
+ * element of an array. Maybe? I might be missing a beat here.
+ * 
+ * One thing definitely worth noting is remembering that if you want to work
+ * with the argyments variable as an array you have to convert it to an array,
+ * because on its own it is not actually an array.
+ */
 
 // See here that toArray takes an array in and spits an array out just fine. So
 // it must be the call bit that does the conversion?
 
+// sep();
+
 // var arrayOne = ['a', 'b', 'c'];
+// console.log("arrayOne.length -- " + arrayOne.length);
 
 // arrayOne.forEach(function(item, index) {
 //   console.log("item, index -- " + item, index);
 // })
 
 // var arrayTwo = _.toArray(arrayOne);
+// console.log("arrayTwo.length -- " + arrayTwo.length);
 
 // arrayTwo.forEach(function(item, index) {
 //   console.log("item, index -- " + item, index);
@@ -150,49 +196,104 @@ newArray.forEach(function(item, index) {
 
 // And here's a function using call or not call.
 
-var awesome = function() {
-  var localArray = _.toArray(arguments);
+// sep();
 
-  localArray.forEach(function(item, index) {
-    console.log("item, index -- " + item, index);
-  })
-}
+// var awesome = function() {
+//   var localArray = _.toArray(arguments);
 
-console.log("awesome:");
-awesome([1,2,3]);
-awesome.call(null, _.toArray(['a', 'b', 'c']));
+//   localArray.forEach(function(item, index) {
+//     console.log("item, index -- " + item, index);
+//   })
+// }
 
-var coolio = function(array) {
-  array.forEach(function(item, index) {
-    console.log("item, index -- " + item, index);
-  })
-};
+// console.log("awesome:");
+// awesome([1,2,3]);
+// awesome.call(null, _.toArray(['a', 'b', 'c']));
 
-console.log("coolio:");
-coolio([1,2,3]);
-coolio.call(null, _.toArray([1,2,3]));
+// var coolio = function(array) {
+//   array.forEach(function(item, index) {
+//     console.log("item, index -- " + item, index);
+//   })
+// };
 
-console.log("array checks:");
-console.log("Array.isArray([1,2,3]) -- " + Array.isArray([1,2,3]));
-console.log("Array.isArray(_.toArray([1,2,3])) -- " + Array.isArray(_.toArray([1,2,3])));
-console.log("Array.isArray() -- " + Array.isArray());
+// console.log("coolio:");
+// coolio([1,2,3]);
+// coolio.call(null, _.toArray([1,2,3]));
 
-sep();
+// console.log("array checks:");
+// console.log("Array.isArray([1,2,3]) -- " + Array.isArray([1,2,3]));
+// console.log("Array.isArray(_.toArray([1,2,3])) -- " + Array.isArray(_.toArray([1,2,3])));
+// console.log("Array.isArray() -- " + Array.isArray());
+
+// sep();
+
+// Some array exploration.
 
 // A function that returns the arguments provided to it as an array
 function returnArguments() {
   return _.toArray(arguments);
 }
 
+// sep();
+// console.log("Return regular arguments as an array:");
+// console.log("returnArguments('a', 'b') -- " + returnArguments('a', 'b'));
+// console.log("Array.isArray(returnArguments('a','b')) -- " + Array.isArray(returnArguments('a','b')));
+// console.log("returnArguments('a','b').length -- " + returnArguments('a','b').length);
 
-sep();
-console.log("Return regular arguments as an array:");
-console.log("returnArguments('a', 'b') -- " + returnArguments('a', 'b'));
-console.log("Array.isArray(returnArguments('a','b')) -- " + Array.isArray(returnArguments('a','b')));
-console.log("returnArguments('a','b').length -- " + returnArguments('a','b').length);
+// sep();
+// console.log("Return arguments as an array, passing in arguments via .call:");
+// console.log("Array.isArray(returnArguments.call(null, ['a', 'b'], 'c')) -- " + Array.isArray(returnArguments.call(null, ['a', 'b'], 'c')));
+// console.log("returnArguments.call(null, ['a', 'b'], 'c') -- " + returnArguments.call(null, ['a', 'b'], 'c'));
+// console.log("returnArguments.call(null, ['a', 'b'], 'c').length -- " + returnArguments.call(null, ['a', 'b'], 'c').length);
 
-sep();
-console.log("Return arguments as an array, passing in arguments via .call:");
-console.log("Array.isArray(returnArguments.call(null, ['a', 'b'], 'c')) -- " + Array.isArray(returnArguments.call(null, ['a', 'b'], 'c')));
-console.log("returnArguments.call(null, ['a', 'b'], 'c') -- " + returnArguments.call(null, ['a', 'b'], 'c'));
-console.log("returnArguments.call(null, ['a', 'b'], 'c').length -- " + returnArguments.call(null, ['a', 'b'], 'c').length);
+/*================================================
+=            And back to the book now            =
+================================================*/
+
+/**
+ * Units of abstraction. By pulling these actions out into functions, we can
+ * easily modify them in place or replace them with new functions later.
+ */
+
+function fail(thing) {
+  throw new Error(thing);
+}
+
+function warn(thing) {
+  console.log(["WARNING:", thing].join(' '));
+}
+
+function note(thing) {
+  console.log(["NOTE:", thing].join(' '));
+}
+
+// Use 'em'
+
+function parseAge(age) {
+  if (!_.isString(age)) {
+    fail("Expecting string");
+  };
+
+  var a;
+
+  note("Attempting to parse an age.");
+  a = parseInt(age, 10);
+
+  if (_.isNaN(a)) {
+    warn(['Could not parse age:', age].join(' '));
+    a = 0;
+  }
+
+  return a;
+}
+
+// yay
+// sep();
+// console.log(parseAge("43"));
+
+// uhoh
+// sep();
+// console.log(parseAge("frodo"));
+
+// this throws an error
+// console.log(parseAge(45));
