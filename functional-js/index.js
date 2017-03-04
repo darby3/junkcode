@@ -14,11 +14,6 @@
 // Requires.
 var _ = require('underscore');
 
-// Minor utilities
-function sep() {
-  console.log("--------");
-};
-
 // checking underscore
 
 // _.times(4, function() {
@@ -251,8 +246,9 @@ function returnArguments() {
 ================================================*/
 
 /**
- * Units of abstraction. By pulling these actions out into functions, we can
- * easily modify them in place or replace them with new functions later.
+ * Units of abstraction and behavior. By pulling these actions out into
+ * functions, we can easily modify them in place or replace them with new
+ * functions later.
  */
 
 function fail(thing) {
@@ -297,3 +293,34 @@ function parseAge(age) {
 
 // this throws an error
 // console.log(parseAge(45));
+
+
+// Determine if something is an indexed data type.
+function isIndexed(data) {
+  return _.isArray(data) || _.isString(data);
+}
+
+console.log("isIndexed('abc') -- " + isIndexed('abc'));
+console.log("isIndexed(['a', 'b']) -- " + isIndexed(['a', 'b']));
+console.log("isIndexed(45) -- " + isIndexed(45));
+
+function nth(a, index) {
+  if (!_.isNumber(index)) {
+    fail("Expected a number as the index");
+  };
+
+  if (!isIndexed(a)) {
+    fail("Not supported on non-indexed type");
+  };
+
+  if ((index < 0) || (index > a.length - 1)) {
+    fail("Index value is out of bounds");
+  };
+
+  return a[index];
+}
+
+console.log("nth('abc', 2) -- " + nth('abc', 2));
+// console.log("nth('abc', 'aaa') -- " + nth('abc', 'aaa'));
+// console.log("nth(45, 4) -- " + nth(45, 4));
+// console.log("nth('abc', 4) -- " + nth('abc', 4));
