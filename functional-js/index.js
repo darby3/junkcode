@@ -502,8 +502,8 @@ function lameCSV(str) {
 
 var peopleTable = lameCSV("name,age,hair\nMerble,35,red\nBob,64,blonde");
 
-console.log("peopleTable -- " + peopleTable);
-peopleTable.forEach(logEach);
+// console.log("peopleTable -- " + peopleTable);
+// peopleTable.forEach(logEach);
 
 /*====================================================================
 =            Which, to parse out that lameCSV function...            =
@@ -538,6 +538,176 @@ peopleTable.forEach(logEach);
 =            And now back to it            =
 ==========================================*/
 
+// The book makes some points here about how we can do neat things with data
+// when we use it in "simple" native formats, instead of recreating class-like
+// structures. IE arrays give us a lot of functionality we can tap in to.
 
+// sep('doing stuff with data');
+
+function selectNames(table) {
+  return _.rest(_.map(table, _.first))
+}
+
+function selectAges(table) {
+  return _.rest(_.map(table, second));
+}
+
+function selectHairColor(table) {
+  return _.rest(_.map(table, function(row) {
+    return nth(row, 2);
+  }))
+}
+
+var mergeResults = _.zip;
+
+// sep('names');
+// var names = selectNames(peopleTable);
+// names.forEach(logEach);
+
+// sep('ages');
+// var ages = selectAges(peopleTable);
+// ages.forEach(logEach);
+
+// sep('hair colors');
+// var hairColors = selectHairColor(peopleTable);
+// hairColors.forEach(logEach);
+
+// sep('merging results');
+// var results = mergeResults(selectNames(peopleTable), selectAges(peopleTable));
+// results.forEach(logEach);
+
+
+/*==================================
+=            Quick note            =
+==================================*/
+
+// Now, what would all this look like if we used an OO approach? We'd have some object that was like
+// 
+// var Person = function(age, name, hairColor {
+//   this.age: age || 0;
+//   this.name: name || '';
+//   this.hairColor: hairColor || '';
+//   
+//   return this;
+// }
+// 
+// ...and then a function that would have to parse through the csv data and
+// create probably an array of objects based on that, and then we'd be either
+// using functions to find relevant objects and data or we'd be building methods
+// into the objects' prototype to return the data we need, etc etc, which does
+// feel cumbersome and extra somehow?
+
+
+// Some useful existence checking functions. These should enable us to use the
+// original comparator() function above.
+
+// Existy. Null and Undefined both signify non-existence. This checks that
+// neither is the case. Because we use the loose operator, we can distinguis
+// between null, undefined, and everything else.
+
+function existy(x) {
+  return x != null;
+}
+
+// console.log("existy(null) -- " + existy(null));
+// console.log("existy(undefined) -- " + existy(undefined));
+// console.log("existy({}.nothingHere) -- " + existy({}.nothingHere));
+// console.log("existy((function(){})()) -- " + existy((function(){})()));
+// console.log("existy(0) -- " + existy(0));
+// console.log("existy(false) -- " + existy(false));
+
+/*================================================================================
+=            I always have trouble with this null and undefined stuff            =
+================================================================================*/
+
+// console.log("existy(peopleTable) -- " + existy(peopleTable));
+// console.log("existy(arrayOfArrays) -- " + existy(arrayOfArrays));
+
+var notARealVariable;
+// sep('empty variable');
+
+// console.log("existy(notARealVariable) -- " + existy(notARealVariable));
+// console.log("notARealVariable == null -- " + notARealVariable == null);
+// console.log("notARealVariable == undefined -- " + notARealVariable == undefined);
+// console.log("notARealVariable === null -- " + notARealVariable === null);
+// console.log("notARealVariable === undefined -- " + notARealVariable === undefined);
+
+// console.log("typeof (notARealVariable) -- " + typeof (notARealVariable));
+
+// Note here that if you do the typeof first, the second line will work and show
+// undefined. If you only do the second line, it will break. 
+
+// sep();
+
+// // console.log("typeof(reallyNotReal) -- " + typeof (reallyNotReal));
+// console.log("reallyNotReal -- " + reallyNotReal);
+
+// var reallyNotReal;
+// console.log("typeof (reallyNotReal) -- " + typeof (reallyNotReal));
+// console.log("existy(reallyNotReal) -- " + existy(reallyNotReal));
+
+// Mostly I think I need to check my assumptions about what I actually want to
+// know when I think I want to know if something exists and/or has a value.
+
+
+// Truthy. Which is to say, it both exists and is not false. (A value of zero
+// would come up as non-truthy, otherwise.)
+
+// sep('Truthiness');
+
+function truthy(x) {
+  return (x !== false) && existy(x);
+}
+
+// console.log("truthy(false) -- " + truthy(false));
+// console.log("truthy(undefined) -- " + truthy(undefined));
+// console.log("truthy(0) -- " + truthy(0));
+// console.log("truthy('') -- " + truthy(''));
+
+// Useful thing to do: do a thing if a condition is true, return null/undefined
+// otherwise.
+
+function doWhen(cond, action) {
+  if (truthy(cond)) {
+    return action();
+  } else {
+    return undefined;
+  }
+}
+
+function executeIfHasField(target, name) {
+  return doWhen(existy(target[name]), function() {
+    var result = _.result(target, name);
+    console.log(['The result is', result].join(' '));
+    return result;
+  })
+}
+
+// Wherein _.result looks at the target (object) for a name property. If it's a
+// function, it executes it. If it's a value, return it. (Hence why the "this"
+// below can be used to reference values on the same object.)
+
+// The function above is used like:
+
+// executeIfHasField([1,2,3], 'reverse');
+
+// executeIfHasField({
+//   foo: 42,
+// }, 'foo');
+
+// executeIfHasField({
+//   foo: 42,
+//   baz: 1442,
+//   bar: function() { 
+//     return this.baz
+//   },
+// }, 'bar');
+
+// executeIfHasField('abacus', 'length');
+
+// var coolString = 'a storm in a teacup';
+// executeIfHasField(coolString, 'length');
+// executeIfHasField(coolString, 'unknown thingy');
+// console.log("executeIfHasField(coolString, 'unknown thingy') -- " + executeIfHasField(coolString, 'unknown thingy'));
 
 
