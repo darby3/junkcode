@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "pretty-error": "^2.0.2",
     "underscore": "^1.8.3"
   }
 }

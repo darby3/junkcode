@@ -14,6 +14,27 @@
 // Requires.
 var _ = require('underscore');
 
+// Pretty print errors.
+require('pretty-error').start();
+
+// minor utilities
+
+/**
+ * Separator.
+ */
+function sep(text) {
+  console.log('');
+  console.log(['-----', text].join(' '));
+}
+
+/**
+ * For use when listing items in an array via .forEach
+ */
+function logEach(item, index) {
+  console.log(index, '---', item)
+}
+
+
 // checking underscore
 
 // _.times(4, function() {
@@ -21,7 +42,9 @@ var _ = require('underscore');
 // });
 
 /**
+ * 
  * Chapter 1 - Introducing functional JS
+ * 
  */
 
 // built in functions
@@ -295,14 +318,17 @@ function parseAge(age) {
 // console.log(parseAge(45));
 
 
+// Building abstraction on abstraction: abstracting away the details of what
+// we're actually doing.
+
 // Determine if something is an indexed data type.
 function isIndexed(data) {
   return _.isArray(data) || _.isString(data);
 }
 
-console.log("isIndexed('abc') -- " + isIndexed('abc'));
-console.log("isIndexed(['a', 'b']) -- " + isIndexed(['a', 'b']));
-console.log("isIndexed(45) -- " + isIndexed(45));
+// console.log("isIndexed('abc') -- " + isIndexed('abc'));
+// console.log("isIndexed(['a', 'b']) -- " + isIndexed(['a', 'b']));
+// console.log("isIndexed(45) -- " + isIndexed(45));
 
 function nth(a, index) {
   if (!_.isNumber(index)) {
@@ -320,7 +346,198 @@ function nth(a, index) {
   return a[index];
 }
 
-console.log("nth('abc', 2) -- " + nth('abc', 2));
+// console.log("nth('abc', 2) -- " + nth('abc', 2));
 // console.log("nth('abc', 'aaa') -- " + nth('abc', 'aaa'));
 // console.log("nth(45, 4) -- " + nth(45, 4));
 // console.log("nth('abc', 4) -- " + nth('abc', 4));
+
+// From there, we can build up another layer of abstraction:
+function second(a) {
+  return nth(a, 1);
+}
+
+// console.log("second('abcde') -- " + second('abcde'));
+// console.log("second(['1', '2', '3']) -- " + second(['1', '2', '3']));
+// console.log("second({}) -- " + second({}));
+
+
+
+// "Comparator": takes two values, returns <1 if the first is less than the
+// second, >1 if the first is greater than the second, and 0 if equal. so, three
+// return values. They're used in Array.sort() to tell JS how to sort values.
+
+var sortResult = [2,3,-1,-6,0,-100,42,10].sort(function(x,y) {
+  if (x<y) {
+    return -1;
+  }
+  if (x>y) {
+    return 1;
+  }
+  return 0;
+});
+
+// console.log("sortResult -- " + sortResult);
+
+// With functional JS, we want to make this more generic and more reusable. But
+// if we just drop it out to a named function as-is, it doesn't stand on its own
+// very well; not very extendable.
+
+// SO instead, let's turn it into a predicate function (one that always returns
+// TRUE or FALSE)
+
+function lessOrEqual(x, y) {
+  return x <= y;
+}
+
+// This gets us partially there, but since it only returns T or F, we need to
+// somehow get to -1/0/1 expected of a comparator. So we write a function that
+// takes a predicate and converts it to the expected result for a comparator
+// operation.
+
+function comparator(pred) {
+  return function(x, y) {
+    if (truthy(pred(x, y))) {
+      return -1;
+    } else if (truthy(pred(y, x))) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+// Note: comparator is a higher-order function, because it takes a function and
+// returns another function.
+
+/*====================================
+=            Odd aside...            =
+====================================*/
+
+// Which I can't actually play with yet because the truthy function hasn't been
+// defined yet, which is odd. (Truthy and Falsey hurts my brain anyways.)
+
+// If we removed the truthy call though and just assumed our pred would return
+// boolean values, though, (which I'm sure we can't actually do for reasons that
+// are soon to become clear), we could do this:
+
+function comparatorAlt(pred) {
+  return function(x, y) {
+    if (pred(x, y)) {
+      return -1;
+    } else if (pred(y, x)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+// So then we could use the predicate function to sort an array:
+
+var sortResultAlt = [2,3,-1,-6,0,-100,42,10].sort(comparatorAlt(lessOrEqual));
+
+// console.log("sortResultAlt -- " + sortResultAlt);
+
+// And by extension we can have other predicates:
+
+function greaterOrEqual(x, y) {
+  return x >= y;
+}
+
+var sortResultAltAlt = [2,3,-1,-6,0,-100,42,10].sort(comparatorAlt(greaterOrEqual));
+
+// console.log("sortResultAltAlt -- " + sortResultAltAlt);
+
+// This one probably should have data checks in it:
+
+function shorterLength(x, y) {
+  return x.length < y.length;
+}
+
+var arrayOfArrays = [
+  [1,2,3],
+  [1,2,3,4,5],
+  [1],
+  [1,2]
+]
+
+// sep('arrayOfArrays');
+// arrayOfArrays.forEach(logEach)
+
+// sep('arrayOfArrays, sorted');
+// arrayOfArrays.sort(comparatorAlt(shorterLength))
+// arrayOfArrays.forEach(logEach);
+
+// Or with strings...
+
+var arrayOfStringArrays = [
+  ['x','y','z'],
+  ['a','b','c','d','e','f','g'],
+  ['a','b','c','d','e'],
+  ['a','b','c'],
+  ['a','b','c','d'],
+]
+
+// sep('arrayOfStringArrays, unsorted');
+// arrayOfStringArrays.forEach(logEach);
+
+// sep('arrayOfStringArrays, sorted');
+// arrayOfStringArrays.sort(comparatorAlt(shorterLength)).forEach(logEach);
+
+/*=================================
+=            End aside            =
+=================================*/
+
+// Data as abstraction; getting data from world X to world Y; such as with the
+// lame CSV parser.
+
+function lameCSV(str) {
+  return _.reduce(str.split('\n'), function(table, row) {
+    table.push(_.map(row.split(','), function(c) {
+      return c.trim();
+    }));
+    return table;
+  }, [])
+}
+
+var peopleTable = lameCSV("name,age,hair\nMerble,35,red\nBob,64,blonde");
+
+console.log("peopleTable -- " + peopleTable);
+peopleTable.forEach(logEach);
+
+/*====================================================================
+=            Which, to parse out that lameCSV function...            =
+====================================================================*/
+
+// _.reduce - boils a list down into a single value.
+// 
+// In this case:
+// 
+//  * list: str.split('\n')
+//  * iteratee: the big function in the middle
+//  * memo: the [] at the end; tells us what the original state of the reduction
+//    looks like
+//    
+//  ...so in this case we're reducing an array (that we get by splitting up a
+//  string) into another arrauy. We pass it through a function to do so.
+//    
+//  The iteratee is passed the original memo (our empty array) and the next
+//  value from the list. The iteratee returns the updated memo each pass.
+//  
+//  In this case our iteratee is taking a table, pushing something into it, and
+//  returning the table (to be added to next time around).
+//  
+//  That something is generated by the _.map function, which itself is given a
+//  list and an iteratee function and generates an array using them. Our list is
+//  generated by splitting each substring at the comma. Our iteratee function is
+//  simply taking the value and removing any whitespace from the start or end.
+//  
+//  Easy, really.
+
+/*==========================================
+=            And now back to it            =
+==========================================*/
+
+
+
+
