@@ -18,7 +18,21 @@ function sep(text) {
  * For use when listing items in an array via .forEach
  */
 function logEach(item, index) {
-  console.log(index, '---', item)
+  console.log(index, '---', item);
+}
+function logEachAP(item, index) {
+  console.log(index, '---', arrayPrint(item));
+}
+
+/**
+ * Maybe it's an array?
+ */
+function arrayPrint(el) {
+  if (Array.isArray(el)) {
+    return '[ ' + el + ' ]';
+  } else {
+    return el
+  }
 }
 
 // Previous functions
@@ -275,18 +289,19 @@ var coolObject = {
   e: 5
 }
 
-sep('collection-centric programming');
+// sep('collection-centric programming');
 
-sep('map');
+// sep('map');
 
-_.map(coolObject, function(value, key, collection) {
-  return [key, value, _.keys(collection)];
-}).forEach(logEach);
+// _.map(coolObject, function(value, key, collection) {
+//   return [key, value, _.keys(collection)];
+// }).forEach(logEach);
 
-sep('filter');
-_.filter(coolObject, function(value, key) {
-  return (value <= 2) || (key === 'd');
-}).forEach(logEach);
+// sep('filter');
+
+// _.filter(coolObject, function(value, key) {
+//   return (value <= 2) || (key === 'd');
+// }).forEach(logEach);
 
 /** 
  *
@@ -300,10 +315,10 @@ function div(x, y) {
   return x / y;
 }
 
-sep('reducing');
+// sep('reducing');
 
-console.log("_.reduce(nums, div) -- " + _.reduce(nums, div));
-console.log("_.reduceRight(nums, div) -- " + _.reduceRight(nums, div));
+// console.log("_.reduce(nums, div) -- " + _.reduce(nums, div));
+// console.log("_.reduceRight(nums, div) -- " + _.reduceRight(nums, div));
 
 // And then we do fun stuff with it:
 
@@ -327,17 +342,17 @@ function F() {
   return false;
 }
 
-sep('using reduceRight to check t/f values of many things');
+// sep('using reduceRight to check t/f values of many things');
 
-console.log("allOf() -- " + allOf());
-console.log("allOf(T, T) -- " + allOf(T, T));
-console.log("allOf(T, T, T, T, F) -- " + allOf(T, T, T, T, F));
+// console.log("allOf() -- " + allOf());
+// console.log("allOf(T, T) -- " + allOf(T, T));
+// console.log("allOf(T, T, T, T, F) -- " + allOf(T, T, T, T, F));
 
-sep();
+// sep();
 
-console.log("anyOf(F, F, F) -- " + anyOf(F, F, F));
-console.log("anyOf(F, T) -- " + anyOf(F, T));
-console.log("anyOf() -- " + anyOf());
+// console.log("anyOf(F, F, F) -- " + anyOf(F, F, F));
+// console.log("anyOf(F, T) -- " + anyOf(F, T));
+// console.log("anyOf() -- " + anyOf());
 
 /*===============================================================
 =            Why does that need to be a reduceRight?            =
@@ -355,20 +370,284 @@ function anyOfLeft() {
   }, false);
 }
 
-sep('using reduceRight to check t/f values of many things from the left');
+// sep('using reduceRight to check t/f values of many things from the left');
 
-console.log("allOfLeft() -- " + allOfLeft());
-console.log("allOfLeft(T, T) -- " + allOfLeft(T, T));
-console.log("allOfLeft(T, T, T, T, F) -- " + allOfLeft(T, T, T, T, F));
+// console.log("allOfLeft() -- " + allOfLeft());
+// console.log("allOfLeft(T, T) -- " + allOfLeft(T, T));
+// console.log("allOfLeft(T, T, T, T, F) -- " + allOfLeft(T, T, T, T, F));
 
-sep();
+// sep();
 
-console.log("anyOfLeft(F, F, F) -- " + anyOfLeft(F, F, F));
-console.log("anyOfLeft(F, T) -- " + anyOfLeft(F, T));
-console.log("anyOfLeft() -- " + anyOfLeft());
+// console.log("anyOfLeft(F, F, F) -- " + anyOfLeft(F, F, F));
+// console.log("anyOfLeft(F, T) -- " + anyOfLeft(F, T));
+// console.log("anyOfLeft() -- " + anyOfLeft());
 
 // These come up the same. I'm not certain I see the difference/need?
+
+/**
+ *
+ * Update: Missed the footnote that makes it clear that, nope, it doesn't need
+ * to be reduceRight, just an illustration purposes kind of thing. Carry on!
+ *
+ */
 
 /*=================================
 =            End aside            =
 =================================*/
+
+/**
+ *
+ * Some other underscore applicative functions looked at here:
+ *
+ * _.find (get the first matching element)
+ * _.reject (the opposite of _.filter)
+ * _.all (true if all are true on the predicate)
+ * _.any (trye is any are true on the predicate)
+ * _.sortBy, _.groupBy, _.countBy
+ *
+ * We note in here that reject is like reversing the truthiness of filter's
+ * predicate; a function that can do that is like so:
+ *
+ */
+
+function complement(pred) {
+  return function() {
+    return !pred.apply(null, _.toArray(arguments));
+  };
+}
+
+/**
+ *
+ * Which is to say, complement takes a function (A) and then returns a function
+ * (B). The returned function will give an array of arguments to the original
+ * predicate function (A) via the apply method (we make sure the arguments are
+ * an array via toArray), and then reverses whatever the result is.
+ *
+ */
+
+// sep();
+
+// console.log("_.filter(['a', 'b', 3, 'd'], complement(_.isNumber)) -- " + 
+//              _.filter(['a', 'b', 3, 'd'], complement(_.isNumber)));
+
+var elementArray = ['a', 'b', 'c', 45, 'guppy'];
+
+// console.log(
+//   "_.filter(elementArray, complement(_.isString)) -- " + 
+//    _.filter(elementArray, complement(_.isString))
+// );
+
+/**
+ *
+ * Definining applicative functions. First we start with a couple functions that
+ * use other functions but aren't applicative because they don't receive the
+ * functions as arguments. And then we move on to mapcat which is and does.
+ *
+ */
+
+function cat() {
+  var head = _.first(arguments);
+
+  if (existy(head)) {
+    return head.concat.apply(head, _.rest(arguments));
+  } else {
+    return [];
+  }
+}
+
+function construct(head, tail) {
+  return cat([head], _.toArray(tail))
+};
+
+// sep('cat');
+
+// console.log(
+//   "cat([1,2,3], [4,5], [6,7,8]) -- " + 
+//    cat([1,2,3], [4,5], [6,7,8])
+// );
+
+// console.log(
+//   "existy(null) -- " + 
+//    existy(null)
+// );
+
+// console.log(
+//   "cat(null, 'x', 'y', 'abacus') -- " + 
+//    cat(null, 'x', 'y', 'abacus')
+// );
+
+// var newCoolArray = cat(['a','b','c'], ['x','y','z']);
+
+// console.log(
+//   "newCoolArray -- " + 
+//    newCoolArray
+// );
+
+// var newCoolArray = construct(42, [1,2,3]);
+
+// console.log(
+//   "newCoolArray -- " + 
+//    newCoolArray
+// );
+
+// var newCoolArray = construct([42], [1,2,3]);
+
+// console.log(
+//   "newCoolArray -- " + 
+//    newCoolArray
+// );
+
+// console.log(
+//   "Array.isArray(construct(42, [1,2,3])) -- " + 
+//    Array.isArray(construct(42, [1,2,3]))
+// );
+
+function mapcat(fun, coll) {
+  return cat.apply(null, _.map(coll, fun));
+}
+
+// var someThing = mapcat(function(e) {
+//   return construct(e, ['-']);
+// }, [1,2,3]);
+
+// console.log(
+//   "someThing -- " + 
+//    someThing
+// );
+
+// someThing.forEach(logEach);
+
+// sep('someThingElse');
+
+// var someThingElse = mapcat(function(e) {
+//   return [e, e*2, [e*4, e*8]];
+// }, [1, 2, 3]);
+
+// someThingElse.forEach(logEach);
+
+// sep('someThingElseElse');
+
+// var someThingElseElse = mapcat(function(e) {
+//   return [e, e*2, [e*4, e*8]];
+// }, [[1, 2], 3]);
+
+// someThingElseElse.forEach(logEach);
+
+/**
+ *
+ * Basically above we are:
+ *
+ * mapcat is taking a function (A) and a collection. 
+ * 
+ * It's mapping the collection through the function (A), returning a new array.
+ * The array is passed through cat(), which concats the arguments into an array.
+ * In our someThing case, our mapping function (A) is construct(), which itself
+ * is returning an array. So the mapping function returns an array of arrays,
+ * which our mapcat function is then concatting into a simpler array.
+ * (Flattening by a level, as the book says.)
+ *
+ * Uh, I have absolutely no idea right now why or how I would use this. Is
+ * probably why I am having trouble wrapping my head around it.
+ *
+ * But of course, the book goes on with butLast() and interpose().
+ *
+ */
+
+function butLast(coll) {
+  return _.toArray(coll).slice(0, -1);
+}
+
+function interpose(inter, coll) {
+  return butLast(mapcat(function(e) {
+    return construct(e, [inter]);
+  }, coll))
+};
+
+// sep('newArrayThing');
+// var newArrayThing = interpose(",", [1,2,3]);
+// newArrayThing.forEach(logEach);
+
+// sep('newArrayThing');
+// var newArrayThing = interpose(",", ['apples', 'oranges', 'pears']);
+// newArrayThing.forEach(logEach);
+
+/**
+ *
+ * Which is like, interpose takes a collection and something to interpose. Down
+ * a few levels, we are mapcatting the collection with the interposed element.
+ * So our construct function is using the cat function to make a bunch of
+ * arrays, and then mapcat is taking those arrays and flattening them out a
+ * level into another array. That array of values gets passed up through
+ * butLast, which gives us a copy of the array, minus one element off the end.
+ *
+ * So the chain looks like:
+ *
+ * return construct(e, [inter]) takes our head (e) as an [ array ], and our
+ * [inter] (which is an array like five times over by the time we get out). it's
+ * using cat to concat them into a new array, [e, inter]. We do this for each e
+ * in the coll, so we wind up with like 
+ * 
+ * [ [e1, inter], [e2, inter], [e3, inter] ]
+ *
+ * but mapcat also references cat, in order to concat the array of elements
+ * (arrays) into a single array, (concatting all the elements into the head one
+ * by one) so we wind up with something like
+ *
+ * [ e1, inter, e2, inter, e3, inter ]
+ *
+ * which gets piped through butLast to drop the last element:
+ * 
+ * [ e1, inter, e2, inter, e3 ]
+ *
+ * ...is more or less the gist of it, I think.
+ *
+ * this would probably look better if I had arrays looking like arrays in the
+ * node console outputs.
+ * 
+ */
+
+/*=====================================
+=            Uhm mayyyyybe            =
+=====================================*/
+
+// sep('arrayPrint');
+
+// console.log(
+//   "arrayPrint('abacus') -- " + 
+//    arrayPrint('abacus')
+// );
+
+// console.log(
+//   "arrayPrint([1,2,3]) -- " + 
+//    arrayPrint([1,2,3])
+// );
+
+// console.log(
+//   "[1,2,3] -- " + 
+//    [1,2,3]
+// );
+
+/*================================
+=            Hmmm end            =
+================================*/
+
+/**
+ *
+ * There's a bunch of underscore here, to talk about data-thinking, and using
+ * objects as, essentially, manipulatable key/value stores.
+ *
+ * Functions referenced include:
+ *
+ * _.keys 
+ * _.values
+ * _.pluck (array of values for given key)
+ * _.pairs (array of arrays of key/value pairs)
+ * _.object (convert array to object)
+ * _.invert (flip keys and values)
+ * _.defaults (ensure selected keys have safe values)
+ * _.omit (give me an object without these keys)
+ * _.pick (give me an object with only these keys)
+ * _.findWhere (first object with these key/value pairs)
+ * _.where (all objects with these key/value pairs)
+ * 
+ */
