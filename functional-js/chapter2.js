@@ -651,3 +651,194 @@ function interpose(inter, coll) {
  * _.where (all objects with these key/value pairs)
  * 
  */
+
+
+/**
+ *
+ * Then we start getting into "table"-life data, with arrays of JS objects being
+ * sort of similar to an SQL table, and dealing with how the abstractions can
+ * change (but we want the abstractions to remain consistent).
+ * 
+ */
+
+// sample array of js objects
+
+var library = [
+  { title: 'SCIP', isbn: '010101444', ed: 1 },
+  { title: 'SCIP', isbn: '010101777', ed: 2 },
+  { title: 'Joy of Clojure', isbn: '256245309', ed: 1 },
+];
+
+// So you can do _.pluck to get all the titles, but it's a different abstraction
+// than the original table idea. Because now we have a simple array of strings,
+// instead of objects like we had originally. Basically..
+
+// console.log(
+//   "_.pluck(library, 'title') -- " + 
+//    _.pluck(library, 'title')
+// );
+
+// so the project function helps us with that:
+
+function project(table, keys) {
+  return _.map(table, function(obj) {
+    return _.pick.apply(null, construct(obj, keys));
+  })
+}
+
+// Remembering that we're feeding an array of arguments to _.pick in order to
+// get an object back:
+
+// console.dir(_.pick(library[0], [ 'isbn', 'ed' ]));
+
+// And we're using apply and construct to make an array of arguments that we
+// feed into pick, namely, in this case, each successive object from the
+// original table (which is being passed in successively via _.map) and the set
+// of keys that we pass in when we invoke the function.
+
+// So we can get something like this:
+
+var editionResults = project(library, [ 'title', 'isbn' ]);
+// editionResults.forEach(logEach);
+
+// Since we're keeping the abstraction in place we can keep processing the data,
+// as we know it's basic structure:
+
+var isbnResults = project(editionResults, ['isbn']);
+// isbnResults.forEach(logEach);
+
+// And then when we just need the data in some other format we can grab it like:
+
+// console.log(
+//   "_.pluck(isbnResults, 'isbn') -- " + 
+//    _.pluck(isbnResults, 'isbn')
+// );
+
+
+/*====================================
+=            Worth noting            =
+====================================*/
+
+/**
+ *
+ * I'm writing functions out a lot here because it helps me mentally trace how
+ * the data is being transformed and passed through them. The ultimate goal of
+ * course is to bury the functions somewhere and just use then to do work. The
+ * 'implementation details' are swept out of site.
+ *
+ * That said, I'm trying to think ahead as well to the need to come up with
+ * functions like this on one's own: to think through the logic of how to nest
+ * all these functions within each other. I'm only scratching the surface on
+ * that. That feels like a longer part of the project in waiting.
+ *
+ *
+ * Also randomly jumping back in later to add: documenting these functions would
+ * be very important, in order to remember how to use them. (I get a little ways
+ * away from the definitions and I forget if they take arrays, objects, etc...)
+ *
+ */
+
+/*=================================
+=            End aside            =
+=================================*/
+
+
+/**
+ *
+ * Now we start looking at using a SELECT...AS type approach. We start with a
+ * function that helps us rename keys on the fly.
+ *
+ */
+
+function rename(obj, newNames) {
+  return _.reduce(newNames, function(o, nu, old) {
+    if (_.has(obj, old)) {
+      o[nu] = obj[old];
+      return o;
+    } else {
+      return o;
+    }
+  }, _.omit.apply(null, construct(obj, _.keys(newNames))));
+}
+
+// Where:
+// 
+// = we are feeding an object to rename along with an object of the form 
+//   { oldName: newName, ... }
+// 
+// - we start with an object that removes any of the keys we're planning on
+//   rename
+//   
+// - then we're going to run through the newNames object, add the new keyname to
+//   the new object, and then assign it the value of the old key from the old
+//   object
+//   
+// There's a bit above that I didn't follow until I saw the as function below:
+// the check on the old object to see if it has the old key at all; this way we
+// can pass in a newNames object that has more names than are necessarily needed
+// on the new object. I think.
+
+// console.dir(rename({a: 1, b: 2 }, {'a': 'AAA'}) );
+
+// And then we can implement the "as" functionality:
+
+function as(table, newNames) {
+  return _.map(table, function(obj) {
+    return rename(obj, newNames);
+  })
+}
+
+// Where we're simply mapping one array to a new array and piping each object
+// through the rename function, passing in the row (object) and the newNames
+// object each time. And we're safe from breaking it if we pass in newNames that
+// don't exist in the table.
+
+// sep('as 1');
+// as(library, {ed: 'edition'}).forEach(logEach);
+
+// sep('as 2');
+// as(library, {
+//   title: 'Book Title', 
+//   somethingElse: 'Some other title'
+// }).forEach(logEach);
+
+// And by 'staying in the same abstraction' we can pipe the data through each
+// function:
+
+var newTableResult = project(as(library, {ed: 'edition'}), ['edition']);
+// newTableResult.forEach(logEach);
+
+// And then we can get to 'WHERE' functionality with a 'restrict' function:
+
+function restrict(table, pred) {
+  return _.reduce(table, function(newTable, obj) {
+    if (truthy(pred(obj))) {
+      return newTable;
+    } else {
+      return _.without(newTable, obj);
+    }
+  }, table);
+};
+
+// ... so you start with the table and then reduce it down to itself minus
+// anything that fails the predicate function test, a la:
+
+var noFirstEds = restrict(library, function(book) {
+  return book.ed > 1;
+});
+
+// sep('some chain');
+// noFirstEds.forEach(logEach);
+
+// and then with chaining:
+
+var someCrazyTable = restrict(
+  project(
+    as(library, { ed: 'edition' }),
+    ['title', 'isbn', 'edition']
+  ), function(book) {
+    return book.edition > 1; 
+});
+
+// sep('mega chain');
+// someCrazyTable.forEach(logEach);
