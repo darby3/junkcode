@@ -842,3 +842,22 @@ var someCrazyTable = restrict(
 
 // sep('mega chain');
 // someCrazyTable.forEach(logEach);
+
+
+/**
+ *
+ * And to kind of sum this up: there are certain techniques or patterns we keep
+ * making use of here. We use objects, often, to represent data. We use
+ * functions that can iterate over arrays and/or specific objects, treating
+ * objects like collections of data in key/value format. We can 'pipe' data
+ * through multiple functions in one big pass, semi-conveniently, because we've
+ * tucked the implementation details away inside the functions. We might take
+ * something and boil it down or iterate on it until we convert it into what
+ * we're looking for. And so forth. I could formalize these strategies a bit but
+ * maybe later. It does really come down to "data thinking," what am I doing
+ * with data and how do I need to transform it or select from it to make it into
+ * what I ultimately need it for.
+ *
+ */
+
+
