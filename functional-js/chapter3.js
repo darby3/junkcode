@@ -309,3 +309,198 @@ function restrict(table, pred) {
  */
 
 
+/**
+ *
+ * So there's a lot of stuff here about dynamic scope that I'm kind of skimming
+ * over because I'm not sure exactly how interested I am in it...also I'm not
+ * sure the specific description here is actually helpful to me,
+ *
+ */
+
+/**
+ *
+ * Variable hoisting is a good thing to remember though.
+ *
+ */
+
+/**
+ *
+ * Okay, closures are a good thing to review.
+ *
+ * Simplest closure: a first-class function that captures a local variable for
+ * later use.
+ *
+ */
+
+function whatWasTheLocal() {
+  var captured = "Hello there";
+
+  return function() {
+    return "The local was: " + captured;
+  }
+};
+
+var reportLocal = whatWasTheLocal();
+
+// console.log(
+//   "reportLocal() -- " + 
+//    reportLocal()
+// );
+
+function createScaleFunction(factor) {
+  return function(v) {
+    return _.map(v, function(n) {
+      return (n * factor);
+    })
+  }
+}
+
+var scale10 = createScaleFunction(10);
+var scale100 = createScaleFunction(100);
+
+var arrayOfNums = [ 1, 2, 3 ];
+
+// console.log(
+//   "scale10(arrayOfNums) -- " + 
+//    scale10(arrayOfNums)
+// );
+
+// console.log(
+//   "scale100(arrayOfNums) -- " + 
+//    scale100(arrayOfNums)
+// );
+
+// console.log(
+//   "scale10(scale100(arrayOfNums)) -- " + 
+//    scale10(scale100(arrayOfNums))
+// );
+
+function makeAdder(captured) {
+  return function(free) {
+    return free + captured;
+  }
+}
+
+var add10 = makeAdder(10);
+var add100 = makeAdder(100);
+
+// console.log(
+//   "add10(32) -- " + 
+//    add10(32)
+// );
+
+// console.log(
+//   "add100(32) -- " + 
+//    add100(32)
+// );
+
+function averageDamp(fun) {
+  return function(n) {
+    return average([n, fun(n)])
+  }
+}
+
+var averageSq = averageDamp(function(n) {
+  return n * n;
+});
+
+// console.log(
+//   "averageSq(10) -- " + 
+//    averageSq(10)
+// );
+
+// console.log(
+//   "averageSq(100) -- " + 
+//    averageSq(100)
+// );
+
+var averageOfTimesTwo = averageDamp(function(n) {
+  return n * 2;
+})
+
+// console.log(
+//   "averageOfTimesTwo(10) -- " + 
+//    averageOfTimesTwo(10)
+// );
+
+// console.log(
+//   "averageOfTimesTwo(100) -- " + 
+//    averageOfTimesTwo(100)
+// );
+
+function plucker(field) {
+  return function(obj) {
+    return (obj && obj[field]);
+  };
+};
+
+var best = {
+  title: 'Infinite Jest',
+  author: 'DFW'
+}
+
+var getTitle = plucker('title');
+
+// console.log(
+//   "getTitle(best) -- " + 
+//    getTitle(best)
+// );
+
+var books = [{
+  title: 'Chthon',
+}, {
+  stars: 5,
+}, {
+  title: 'Botchan',
+}]
+
+var third = plucker(2);
+
+// console.log(
+//   "third(books) -- " + 
+//    third(books)
+// );
+
+// console.dir(third(books));
+
+var finalResult = _.filter(books, getTitle);
+
+// finalResult.forEach(logEach);
+
+/*===========================
+=            hmm            =
+===========================*/
+
+// sep('hmm');
+
+var objectThing = { name: 'Joe' };
+
+// console.log(
+//   "objectThing -- " + 
+//    objectThing
+// );
+
+// console.log(
+//   "(objectThing && true) -- " + 
+//    (objectThing && true)
+// );
+
+// console.log(
+//   "(true && objectThing) -- " + 
+//    (true && objectThing)
+// );
+
+// console.log(
+//   "objectThing['name'] -- " + 
+//    objectThing['name']
+// );
+
+// console.log(
+//   "(objectThing && objectThing['name']) -- " + 
+//    (objectThing && objectThing['name'])
+// );
+
+// console.log(
+//   "(objectThing && objectThing['dumpy']) -- " + 
+//    (objectThing && objectThing['dumpy'])
+// );
