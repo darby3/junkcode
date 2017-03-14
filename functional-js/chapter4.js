@@ -472,7 +472,8 @@ var safeMult = fnull(function(total, n) {
  * lookup becomes a function returned by defaults, which takes settings object
  * full of default values that gets captured by closure. The function will
  * assign a value using fnull to val, which ultimately is applying arguments to
- * the identity function. So when you run lookup, it's going to check for the existence of the property on the object it is given, ...
+ * the identity function. So when you run lookup, it's going to check for the
+ * existence of the property on the object it is given, ...
  *
  * this is a bit of a mess but it starts to expand out like:
  * 
