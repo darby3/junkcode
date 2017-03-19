@@ -1,0 +1,169 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+// Styles
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  // width: 100%;
+  // min-height: 100%;
+  font-family: $titillium-family;
+}
+
+// Grid experiments
+
+.main {
+  margin: 2rem 2rem;
+  min-height: calc(100vh - 4rem);
+  width: calc(100% - 4rem - 3rem);
+
+  display: grid;
+  
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-template-rows: 5rem 8rem auto 8rem 10rem;
+
+  grid-template-areas: 
+    "header header header header"
+    "banner-upper banner-upper banner-upper banner-upper "
+    "main main main aside"
+    "banner-lower banner-lower banner-lower banner-lower "
+    "footer footer footer footer";
+
+  grid-gap: 2rem 1rem;
+  justify-items: stretch;
+  align-items: stretch;
+}
+
+.mainNotASubGrid {
+  margin: 0.25rem;
+  min-height: calc(100vh - 0.5rem);
+  width: calc(100% - 0.5rem);
+
+  display: grid;
+  
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto auto 1fr 1fr auto;
+
+  grid-template-areas: 
+    "header       header       header       header       header       header       header       header       header       header       header       header"
+    "banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper banner-upper "
+    "main         main         main         main         main         main         main         main         main         aside        aside        aside"
+    "banner-lower banner-lower banner-lower banner-lower banner-lower banner-lower banner-lower banner-lower banner-lower aside        aside        aside"
+    "footer       footer       footer       footer       footer       footer       footer       footer       footer       footer       footer       footer";
+
+  grid-gap: 2rem 1rem;
+  justify-items: stretch;
+  align-items: stretch;
+}
+
+.header {
+  grid-area: header;
+  background: #cecece;
+}
+
+.banner--upper {
+  grid-area: banner-upper;
+  background: #fafafa;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  
+  grid-gap: 2rem 1rem;
+
+  grid-template-areas: 
+    "upper-banner-top upper-banner-top upper-banner-top upper-banner-top"
+    "bottom-1 bottom-2 bottom-3 bottom-4";
+
+  // grid-gap: 2rem 1rem;
+
+  justify-items: center;
+  width: 100%;
+
+  &__top {
+    grid-area: upper-banner-top;
+  }
+}
+
+.body {
+  grid-area: main;
+  background: #ebebeb;
+
+  align-self: start;
+}
+
+.aside {
+  grid-area: aside;
+  // background: #bbbbbb;
+  border: 1px solid #005500;
+
+  align-self: stretch;
+
+          display: flex;
+        flex-flow: column nowrap;
+  justify-content: center;
+      align-items: center;
+
+}
+
+.banner--lower {
+  grid-area: banner-lower;
+  background: #888888;
+  color: #ffffff;
+  align-self: end;
+
+  display: grid;
+  
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  // grid-gap: 2rem 1rem;
+
+  width: 100%;
+
+  align-items: start;
+  justify-items: center;
+
+  h4, p {
+    margin: 1rem 0;
+  }
+
+  &__topleft {
+    grid-row: 1 / span 1;
+    grid-column: 1 / span 2;
+    justify-self: start;
+  }
+
+  &__topright {
+    justify-self: end;
+    grid-row: 1 / span 1;
+    grid-column: 3 / span 1;
+  }
+
+  &__element--1 {
+    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+  }
+  &__element--2 {
+    grid-row: 2 / span 1;
+    grid-column: 2 / span 1;
+  }
+  &__element--3 {
+    grid-row: 2 / span 1;
+    grid-column: 3 / span 1;
+  }
+}
+
+.footer {
+  grid-area: footer;
+  background: #000000;
+  color: #ffffff;
+}
