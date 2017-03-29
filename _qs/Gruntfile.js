@@ -284,20 +284,27 @@ module.exports = function(grunt) {
 };
 
 
+/**
+ *
+ * Helper function to get a Date String for constructing distribution folders.
+ * This can probably be dumped into a separate module file or something.
+ *
+ */
+
 function getNewDateString() {
   var curDate = new Date();
-  var curYear = "16";
+  var curYear = curDate.getFullYear();
   var curMonth = curDate.getMonth() + 1;
   var curDay = curDate.getDate();
   var curHours = curDate.getHours();
   var curMinutes = curDate.getMinutes();
 
-  var dateString = "dist-";
+  var dateString = "dist--";
 
+  dateString += curYear.toString();
   dateString += (curMonth <= 9) ? "0" + curMonth.toString() : (curMonth).toString();
   dateString += (curDay <= 9) ? "0" + curDay.toString() : (curDay).toString();
 
-  dateString += curYear;
   dateString += "_";
 
   dateString += (curHours <= 9) ? "0" + curHours.toString() : (curHours).toString();
