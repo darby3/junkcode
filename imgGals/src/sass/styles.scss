@@ -1,0 +1,73 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+// Styles
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  width: 100%;
+  // min-height: 100%;
+  font-family: $titillium-family;
+}
+
+
+// Higher-level flexWrap
+
+.flexWrap {
+  clear: both;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.flexWrap__image {
+  flex: 1 1 75%;
+  position: relative;
+
+  img {
+    width: 100%;
+    display: block;
+  }
+}
+
+.flexWrap__imageClicker {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+
+          display: flex;
+        flex-flow: row nowrap;
+  justify-content: center;
+      align-items: center;
+
+      img {
+        border: 1px solid rgba(#ffffff, 0.75);
+        margin: 0 0 0 1rem;
+      }
+}
+
+.flexWrap__content {
+  flex: 1 1 25%;
+  padding: 0 2rem;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.flexWrap--alt {
+  @extend .flexWrap;
+
+  .flexWrap__image {
+    order: 2;
+  }
+}
+
