@@ -1,0 +1,49 @@
+// Imports
+@import "normalize";
+
+// Variables
+$titillium-family: "Titillium Web", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+
+// Styles
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  width: 100%;
+  min-height: 100%;
+  font-family: $titillium-family;
+}
+
+canvas {
+  width: 80%;
+  height: 80%;
+  opacity: .5;
+}
+
+#gridBox {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#textBox {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center;
+  color: #ff00ff;
+}
