@@ -1,8 +1,6 @@
 module.exports = function(grunt) {
 
   console.log("==================================================");
-  console.log("Current distribution folder:", getNewDateString());
-
 
   // TODO: Document this initialization call.
 
@@ -120,13 +118,10 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('default', ['browserify:dev',
-                             'concat:dev',
-                             'sass:dev',
-                             'postcss:dev',
-                             'assemble:site',
-                             'express',
-                             'watch']);
+                                 'concat:dev',
+                                 'sass:dev',
+                                 'postcss:dev',
+                                 'express',
+                                 'watch']);
 
 };
-
-
