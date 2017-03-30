@@ -13,7 +13,14 @@ var tnBox = document.getElementById("thumbnail_box");
 
 var engaged;
 
+// this could be replaced with timing functionality to smooth it out a bit
 var increment = 0.035;
+
+// for image preloading?
+var loadingImage = new Image();
+loadingImage.addEventListener("load", function () {
+  console.log("loadingImage done");
+});
 
 // document content loaded wrapper
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,6 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
   for (var i = 0; i < tnails.length; i++) {
     tnails[i].dataset.active = "false";
   }
+
+  // preload images
+  var images = document.querySelectorAll("img[data-target]");
+  console.log(images.length);
+  preload(images);
 
   // Start ading code.
   tnBox.addEventListener("click", startTransition);
@@ -50,6 +62,9 @@ function startTransition(e) {
   newImage = e.target.dataset.target;
   targetImage = document.getElementById("fullImage");
 
+  // start poreloading the image
+  loadingImage.src = newImage;
+
   targetImage.style.opacity = 1;
 
   drawOut();
@@ -68,6 +83,7 @@ function drawOut() {
 }
 
 function endTransition() {
+  console.log("transition finishing now");
   drawIn();
 }
 
@@ -83,6 +99,19 @@ function drawIn() {
     targetImage.style.opacity = 1;
 
     engaged = false;
+  }
+}
+
+function preload(images) {
+  var imageArray = [];
+  for (var pri = 0; pri < images.length; pri++) {
+    imageArray.push(new Image());
+
+    imageArray[pri].src = images[pri].dataset.target;
+
+    imageArray[pri].addEventListener("load", function () {
+      console.log("loadingImage done", this.src);
+    });
   }
 }
 
