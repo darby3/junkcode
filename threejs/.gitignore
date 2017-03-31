@@ -8,7 +8,6 @@ css
 # Files
 
 .DS_store
-*.html
 *.map
 *.temp
 *.bak
